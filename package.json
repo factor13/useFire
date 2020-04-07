@@ -23,7 +23,7 @@
         "database"
     ],
     "scripts": {
-        "build": "rm -rf ./dist && tsc",
+        "build": "rm -rf ./dist && yarn run tsc",
         "pretest": "yarn build",
         "test": "nyc mocha --exit",
         "watch": "mocha --watch",
