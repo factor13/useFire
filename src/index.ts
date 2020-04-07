@@ -1,6 +1,7 @@
 import { useFireauth } from './useFireauth';
 import { useFirestore } from './useFirestore';
 import { useFirestoreCollection } from './useFirestoreCollection';
+import { useFirebaseStorage } from './useFirebaseStorage';
 import { React } from './util';
 
 export const useFire = (react: React, app: firebase.app.App) => ({
@@ -32,5 +33,9 @@ export const useFire = (react: React, app: firebase.app.App) => ({
 
     useFirestoreCollection<T = unknown>(path: string) {
       return useFirestoreCollection<T>(react, app, path);
+    },
+
+    useFirebaseStorage(path: string) {
+        return useFirebaseStorage(react, app, path);
     },
 });
