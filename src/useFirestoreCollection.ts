@@ -9,12 +9,25 @@ type useFirestoreCollectionHook<T> = [
 export function useFirestoreCollection<T>(
     { useEffect, useState }: React,
     app: firebase.app.App,
-    path: string
+    path: string,
+    orderBy: string | [string] | undefined,
+    limit: number | undefined,
 ): useFirestoreCollectionHook<T> {
     const [data, setData] = useState([] as any);
     const user = app.auth().currentUser;
     path = path.charAt(0) === '$' ? path.replace('$', `/users/${user && user.uid}`) : path;
-    const collectionRef = app.firestore().collection(path);
+    let collectionRef = app.firestore().collection(path);
+    let query: firebase.firestore.Query<firebase.firestore.DocumentData> = collectionRef;
+    if (orderBy instanceof Array) {
+        orderBy.forEach((order) => {
+            query = query.orderBy(order);
+        });
+    } else if (orderBy !== undefined)  {
+        query = query.orderBy(orderBy);
+    }
+    if (limit !== undefined) {
+        query = collectionRef.limit(limit);
+    }
 
     // Subscribe to real-time updates
     useEffect(
@@ -23,10 +36,10 @@ export function useFirestoreCollection<T>(
                 const contents = snap.docs;
                 setData(contents);
             }
-            const unsubscribe = collectionRef.onSnapshot(onSnapUpdate);
+            const unsubscribe = query.onSnapshot(onSnapUpdate);
             return unsubscribe;
         },
-        [user, path]
+        [user, path, orderBy, limit]
     );
 
     function addDocument(newDoc: T) {

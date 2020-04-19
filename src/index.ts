@@ -31,8 +31,8 @@ export const useFire = (react: React, app: firebase.app.App) => ({
         return useFirestore<T>(react, app, path, initialValue, fallbackValue);
     },
 
-    useFirestoreCollection<T = unknown>(path: string) {
-      return useFirestoreCollection<T>(react, app, path);
+    useFirestoreCollection<T = unknown>(path: string, orderBy?: string | [string], limit?: number) {
+      return useFirestoreCollection<T>(react, app, path, orderBy, limit);
     },
 
     useFirebaseStorage(path: string) {
