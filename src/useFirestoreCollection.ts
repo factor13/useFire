@@ -18,10 +18,12 @@ export function useFirestoreCollection<T>(
     path = path.charAt(0) === '$' ? path.replace('$', `/users/${user && user.uid}`) : path;
     let collectionRef = app.firestore().collection(path);
     let query: firebase.firestore.Query<firebase.firestore.DocumentData> = collectionRef;
+    let orderHash = orderBy;
     if (orderBy instanceof Array) {
         orderBy.forEach((order) => {
             query = query.orderBy(order);
         });
+        orderHash = orderBy.join("");
     } else if (orderBy !== undefined)  {
         query = query.orderBy(orderBy);
     }
@@ -36,10 +38,11 @@ export function useFirestoreCollection<T>(
                 const contents = snap.docs;
                 setData(contents);
             }
-            const unsubscribe = query.onSnapshot(onSnapUpdate);
-            return unsubscribe;
+            return query.onSnapshot(onSnapUpdate);
         },
-        [user, path, orderBy, limit]
+        // TODO(ewolak): hook on orderBy, limit as well. For now it's a problem
+        // because a constant array is never equal. https://github.com/facebook/react/issues/14324
+        [user, path, orderHash, limit]
     );
 
     function addDocument(newDoc: T) {
